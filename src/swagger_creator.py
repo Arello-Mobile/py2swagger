@@ -3,7 +3,6 @@ import json
 import os
 import re
 import six
-import types
 
 from .utils import OrderedDict, YAMLLoaderMixin
 
@@ -52,9 +51,9 @@ class SwaggerCreator(YAMLLoaderMixin):
 
     @classmethod
     def _load_data(cls, obj):
-        if isinstance(obj, types.StringTypes):
+        if isinstance(obj, (six.string_types, six.text_type)):
             return cls._load_from_str(obj)
-        elif isinstance(obj, types.DictionaryType):
+        elif isinstance(obj, dict):
             return cls._load_from_dict(obj)
         else:
             return cls._parse_docstring(obj)

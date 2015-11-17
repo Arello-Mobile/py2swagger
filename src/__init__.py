@@ -1,6 +1,7 @@
 import argparse
 import codecs
 import imp
+import logging
 import os
 import sys
 
@@ -10,6 +11,9 @@ from yapsy.PluginManager import PluginManager
 from .config import SWAGGER_SETTINGS, API_SETTINGS
 from .plugins import Py2SwaggerPlugin
 from .swagger_creator import SwaggerCreator
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 def run():
