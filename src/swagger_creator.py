@@ -1,34 +1,14 @@
-# coding=utf-8
-
 import inspect
 import json
 import os
 import re
 import six
 import types
-from collections import OrderedDict
 
-import yaml
-
-# Ability to load and dump yaml as OrderedDict
-from yaml import resolver
-
-_mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+from .utils import OrderedDict, YAMLLoaderMixin
 
 
-def dict_representer(dumper, data):
-    return dumper.represent_dict(six.iteritems(data))
-
-
-def dict_constructor(loader, node):
-    return OrderedDict(loader.construct_pairs(node))
-
-
-yaml.add_representer(OrderedDict, dict_representer)
-yaml.add_constructor(_mapping_tag, dict_constructor)
-
-
-class SwaggerCreator(object):
+class SwaggerCreator(YAMLLoaderMixin):
 
     def __init__(self, **kwargs):
 
@@ -81,7 +61,7 @@ class SwaggerCreator(object):
 
     @classmethod
     def _load_from_str(cls, data):
-        obj = yaml.load(data)
+        obj = cls.yaml_load(data)
         return cls._load_from_dict(obj)
 
     @staticmethod
@@ -99,11 +79,8 @@ class SwaggerCreator(object):
         summary, description, schema = None, None, None
         if '---' in docstring:
             head, yml = re.split(r'\s*---*\s*', docstring)
-            try:
-                if yml:
-                    schema = yaml.load(yml)
-            except yaml.YAMLError:
-                pass
+            if yml:
+                schema = cls.yaml_load(yml)
         else:
             head = docstring
 
