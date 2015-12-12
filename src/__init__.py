@@ -4,13 +4,14 @@ import imp
 import logging
 import os
 import sys
+import json
 
 from distutils.sysconfig import get_python_lib
 from yapsy.PluginManager import PluginManager
 
 from .config import SWAGGER_SETTINGS, API_SETTINGS
 from .plugins import Py2SwaggerPlugin
-from .swagger_creator import SwaggerCreator
+from .schema_builder import SchemaBuilder
 
 
 logging.basicConfig(level=logging.INFO)
@@ -53,12 +54,13 @@ def run():
 
     datamap, definitions = plugin.plugin_object.run(args, **API_SETTINGS)
 
-    s = SwaggerCreator(
+    builder = SchemaBuilder(
+        datamap=datamap,
         definitions=definitions,
         **SWAGGER_SETTINGS
     )
-    s.generate(datamap)
-    swagger_schema = s.dump_schema()
+
+    swagger_schema = json.dumps(builder.schema, indent=2)
 
     if args.output:
         with codecs.open(args.output, 'wb', encoding='utf-8') as f:
