@@ -140,4 +140,3 @@ class YAMLDocstringParser(YAMLLoaderMixin):
                     self.schema[k].extend(v)
                 elif isinstance(v, (dict, OrderedDict)):
                     self.schema[k].update(v)
-                    # self.schema.update(schema)

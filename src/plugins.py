@@ -1,6 +1,10 @@
 from yapsy.IPlugin import IPlugin
 
 
+class Py2SwaggerPluginException(Exception):
+    pass
+
+
 class Py2SwaggerPlugin(IPlugin):
     """ Interface for py2swagger plugins
     """

@@ -12,7 +12,7 @@ README = """
 """
 
 # allow setup.py to be run from any path
-os.chdir(os.path.dirname(__file__))
+os.chdir(os.path.abspath(os.path.dirname(__file__)))
 install_requires = [
     'PyYAML>=3.10',
     'six',

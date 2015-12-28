@@ -29,8 +29,6 @@ def dict_constructor(loader, node):
 yaml.add_representer(OrderedDict, dict_representer)
 yaml.add_constructor(_mapping_tag, dict_constructor)
 
-unwrappage = namedtuple('unwrappage', ['closure', 'code'])
-
 ALLOWED = 'all'
 
 
@@ -85,12 +83,6 @@ def clean_parameters(parameters, method=ALLOWED):
     return cleaned_parameters
 
 
-def closure_n_code(func):
-    return unwrappage(
-        six.get_function_closure(func),
-        six.get_function_code(func))
-
-
 def get_mro_list(instance, only_parents=True):
     mro = []
     if inspect.isclass(instance):
@@ -98,19 +90,6 @@ def get_mro_list(instance, only_parents=True):
         if only_parents:
             mro = mro[1:]
     return mro
-
-
-def get_closure_var(func, name=None):
-    unwrap = closure_n_code(func)
-    if name:
-        index = unwrap.code.co_freevars.index(name)
-        return unwrap.closure[index].cell_contents
-    else:
-        for closure_var in unwrap.closure:
-            if isinstance(closure_var.cell_contents, types.FunctionType):
-                return closure_var.cell_contents
-        else:
-            return None
 
 
 def get_decorators(function):
@@ -130,63 +109,44 @@ def get_decorators(function):
     return [function] + decorators
 
 
-def multi_getattr(obj, attr, default=None):
-    """
-    Get a named attribute from an object; multi_getattr(x, 'a.b.c.d') is
-    equivalent to x.a.b.c.d. When a default argument is given, it is
-    returned when any attribute in the chain doesn't exist; without
-    it, an exception is raised when a missing attribute is encountered.
-    """
-    attributes = attr.split(".")
-    for i in attributes:
-        try:
-            obj = getattr(obj, i)
-        except AttributeError:
-            if default:
-                return default
-            else:
-                raise
-    return obj
+def _extract_class_path(path):
+    module_path = None
+    class_name = None
 
-
-def load_class(path, callback):
-    """
-    Dynamically load a class from a string
-    """
-    if not path or not callback or not hasattr(callback, '__module__'):
-        return None
-
-    package = None
-    if '.' not in path:
-        # within current module/file
-        class_name = path
-        module_path = callback.__module__
-    else:
-        # relative or fully qualified path import
+    if '.' in path:
         class_name = path.split('.')[-1]
-        module_path = ".".join(path.split('.')[:-1])
+        module_path = path[:-(len(class_name) + 1)]
+    else:
+        class_name = path
 
-        if path.startswith('.'):
-            # relative lookup against current package
-            # ..serializers.FooSerializer
-            package = callback.__module__
+    return module_path, class_name
 
+
+def _load_class_obj(module_path, class_name, package=None):
     class_obj = None
-    # Try to perform local or relative/fq import
     try:
-        module = importlib.import_module(module_path, package=package)
+        module = importlib.import_module(module_path, package)
         class_obj = getattr(module, class_name, None)
     except ImportError:
         pass
 
-    # Class was not found, maybe it was imported to callback module?
-    # from app.serializers import submodule
-    # serializer: submodule.FooSerializer
+    return class_obj
+
+
+def load_class(path):
+    if path.startswith('.'):
+        # is it relative path?
+        # TODO: may be later
+        raise ImportError('Relative class path is not supported {}'.format(path))
+
+    module_path, class_name = _extract_class_path(path)
+    if module_path is None:
+        # is class located in current module?
+        # TODO: may be later
+        raise ImportError('Absolute module path is required {}'.format(path))
+
+    class_obj = _load_class_obj(module_path, class_name)
     if class_obj is None:
-        try:
-            module = importlib.import_module(callback.__module__)
-            class_obj = multi_getattr(module, path)
-        except (ImportError, AttributeError):
-            raise Exception("Could not find %s" % path)
+        raise ImportError('Could not find {}'.format(path))
 
     return class_obj

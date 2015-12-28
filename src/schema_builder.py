@@ -59,8 +59,7 @@ class SchemaBuilder(object):
         operation = OrderedDict(
             summary=obj.get('summary', None),
         )
-        ## copy-paste from https://github.com/gangverk/flask-swagger/blob/9097d9a7d08b5d64fbfac23dfea9491cdde4382b/flask_swagger.py#L169
-        # other optionals
+
         optional_fields = [
             'tags',
             'consumes',
@@ -72,9 +71,8 @@ class SchemaBuilder(object):
             'externalDocs'
         ]
         for key in optional_fields:
-            if key in operation:
+            if key in obj:
                 operation[key] = obj.get(key)
-        ## end of copy-paste
 
         if 'description' in obj:
             operation['description'] = obj['description']
@@ -83,8 +81,7 @@ class SchemaBuilder(object):
         if 'parameters' in obj:
             operation['parameters'] = obj['parameters']
 
-        responses = obj.get('responses', {})
-        operation['responses'] = responses
+        operation['responses'] = obj.get('responses', {})
         return operation
 
     def _update_path(self, url, method, operation):

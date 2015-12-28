@@ -9,23 +9,38 @@ class BaseDocstringIntrospector(object):
     Base docstring introspector collects yaml docstrings from:
     - instance docstring
     - instance decorators docstrings
-    - instance mro docstrings
+    - instance base class docstrings
     """
 
     def __init__(self, instance):
         """
         :param instance: class or function
         """
-        self.instance = instance
-        self.parser = self._create_parser()
-        self.mro_parser = self._create_mro_parser()
-        self.decorators_parser = self._create_decorators_parser()
+        self._instance = instance
 
-        self.parsers = [
-            self.mro_parser,
-            self.decorators_parser,
-            self.parser
-        ]
+        self._parser = self._create_parser(instance)
+        self._inheritances_parser = self._create_parser(self._get_inheritances(instance))
+        self._decorators_parser = self._create_parser(self._get_decorators(instance))
+
+        self._parsers = (
+            self._inheritances_parser,
+            self._decorators_parser,
+            self._parser
+        )
+
+    @property
+    def parser(self):
+        """
+        Returns current object parser
+        """
+        return self._parsers[-1]
+
+    @property
+    def parsers(self):
+        """
+        Returns list of parsers
+        """
+        return self._parsers
 
     @staticmethod
     def _get_doc(instance):
@@ -38,27 +53,29 @@ class BaseDocstringIntrospector(object):
         """
         return inspect.getdoc(instance)
 
-    def _create_mro_parser(self):
+    @staticmethod
+    def _get_inheritances(instance):
         """
-        Creates instance mro yaml parser
+        Returns list of base objects for instance
 
-        :return: yaml parser
-        :rtype: YAMLDocstringParser
+        :param instance: class or object
+        :return: list of objects
+        :rtype: list
         """
-        parent_classes = get_mro_list(self.instance)[::-1]
-        return self._create_parser(parent_classes)
+        return list(get_mro_list(instance)[::-1])
 
-    def _create_decorators_parser(self):
+    @staticmethod
+    def _get_decorators(instance):
         """
-        Creates instance decorators yaml parser
+        Returns list of decorators for instance
 
-        :return: yaml parser
-        :rtype: YAMLDocstringParser
+        :param instance: class or object
+        :return: list of objects
+        :rtype: list
         """
-        decorators = get_decorators(self.instance)[1:] if self.instance else []
-        return self._create_parser(decorators)
+        return get_decorators(instance)[1:]
 
-    def _create_parser(self, instances=None):
+    def _create_parser(self, instances):
         """
         Creates yaml parser from instance(s)
 
@@ -66,7 +83,9 @@ class BaseDocstringIntrospector(object):
         :return: yaml parser
         :rtype: YAMLDocstringParser
         """
-        instances = instances if instances is not None else [self.instance]
+        if not isinstance(instances, (list, tuple)):
+            instances = [instances]
+
         parser = YAMLDocstringParser()
         for instance in instances:
             doc = self._get_doc(instance)
@@ -82,7 +101,7 @@ class BaseDocstringIntrospector(object):
         :rtype: list
         """
         parameters = []
-        for parser in self.parsers:
+        for parser in self._parsers:
             parameters.extend(parser.get_parameters())
         return parameters
 
@@ -95,6 +114,6 @@ class BaseDocstringIntrospector(object):
         :rtype: OrderedDict
         """
         responses = OrderedDict()
-        for parser in self.parsers:
+        for parser in self._parsers:
             responses.update(parser.get_responses())
         return responses

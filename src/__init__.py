@@ -10,7 +10,7 @@ from distutils.sysconfig import get_python_lib
 from yapsy.PluginManager import PluginManager
 
 from .config import SWAGGER_SETTINGS, API_SETTINGS
-from .plugins import Py2SwaggerPlugin
+from .plugins import Py2SwaggerPlugin, Py2SwaggerPluginException
 from .schema_builder import SchemaBuilder
 
 
@@ -18,10 +18,11 @@ logging.basicConfig(level=logging.INFO)
 
 
 def run():
+    internal_ext_path = os.path.join(os.path.dirname(__file__), '../ext')
     # search plugins in virtualenv site packages
     plugin_manager = PluginManager(
         categories_filter={'py2swagger': Py2SwaggerPlugin},
-        directories_list=[get_python_lib()],
+        directories_list=[internal_ext_path, get_python_lib()],
         plugin_info_ext='py2swagger'
     )
     plugin_manager.collectPlugins()
@@ -43,7 +44,8 @@ def run():
 
     plugin = plugin_manager.getPluginByName(args.plugin, category='py2swagger')
     if not plugin:
-        sys.exit('Plugin not available')
+        sys.stderr.write('Plugin not available\n')
+        sys.exit(1)
 
     if args.config:
         custom_config = imp.load_source('config', args.config)
@@ -52,7 +54,11 @@ def run():
         SWAGGER_SETTINGS.update(swagger_settings)
         API_SETTINGS.update(api_settings)
 
-    datamap, definitions = plugin.plugin_object.run(args, **API_SETTINGS)
+    try:
+        datamap, definitions = plugin.plugin_object.run(args, **API_SETTINGS)
+    except Py2SwaggerPluginException as e:
+        sys.stderr.write('{}\n'.format(e))
+        sys.exit(1)
 
     builder = SchemaBuilder(
         datamap=datamap,
@@ -61,7 +67,6 @@ def run():
     )
 
     swagger_schema = json.dumps(builder.schema, indent=2)
-
     if args.output:
         with codecs.open(args.output, 'wb', encoding='utf-8') as f:
             f.write(swagger_schema)
