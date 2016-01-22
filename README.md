@@ -34,3 +34,14 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         Output file (Default stdout)
 ```
+
+
+## Run tests
+
+```bash
+cd src/
+
+pip install -r tests/testapp/requirements.txt
+
+usage: python tests/run_tests.py
+```
