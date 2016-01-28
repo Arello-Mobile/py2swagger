@@ -1,0 +1,272 @@
+{
+  "swagger": "2.0", 
+  "info": {
+    "version": "0.0.1", 
+    "description": "", 
+    "title": "API title"
+  }, 
+  "host": "", 
+  "basePath": "/", 
+  "produces": [
+    "application/json"
+  ], 
+  "consumes": [
+    "application/json", 
+    "application/x-www-form-urlencoded", 
+    "multipart/form-data"
+  ], 
+  "paths": {
+    "/a-view": {
+      "post": {
+        "summary": "Post Email Api", 
+        "tags": [
+          "email api"
+        ], 
+        "consumes": [
+          "application/json", 
+          "application/x-www-form-urlencoded", 
+          "multipart/form-data"
+        ], 
+        "produces": [
+          "application/json", 
+          "text/html"
+        ], 
+        "parameters": [
+          {
+            "required": true, 
+            "type": "string", 
+            "description": "Clients should authenticate by passing the base64 encoded username:password string\n            in the \"Authorization HTTP header, prepended with the string \"Basic \".\n            For example:\n            Authorization: Basic dXNlcjpwYXNzd29yZA==\n            ", 
+            "in": "header", 
+            "name": "Authorization"
+          }
+        ], 
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        }
+      }
+    }, 
+    "/b-view": {
+      "get": {
+        "summary": "List Custom", 
+        "tags": [
+          "custom_view"
+        ], 
+        "consumes": [
+          "application/json", 
+          "application/x-www-form-urlencoded", 
+          "multipart/form-data"
+        ], 
+        "produces": [
+          "application/json", 
+          "text/html"
+        ], 
+        "parameters": [
+          {
+            "required": false, 
+            "type": "string", 
+            "name": "base_param", 
+            "in": "query"
+          }, 
+          {
+            "required": true, 
+            "type": "string", 
+            "description": "Clients should authenticate by passing the base64 encoded username:password string\n            in the \"Authorization HTTP header, prepended with the string \"Basic \".\n            For example:\n            Authorization: Basic dXNlcjpwYXNzd29yZA==\n            ", 
+            "in": "header", 
+            "name": "Authorization"
+          }, 
+          {
+            "description": "Page parameter", 
+            "required": false, 
+            "type": "integer", 
+            "name": "page", 
+            "in": "query"
+          }
+        ], 
+        "responses": {
+          "200": {
+            "properties": {
+              "status": {
+                "type": "integer"
+              }, 
+              "message": {
+                "type": "string"
+              }
+            }, 
+            "description": "Response Description", 
+            "schema": {
+              "type": "array"
+            }
+          }, 
+          "403": {
+            "description": "Error Description", 
+            "schema": {
+              "type": "object", 
+              "properties": {
+                "status": {
+                  "type": "integer"
+                }, 
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }, 
+    "/c-view": {
+      "post": {
+        "summary": "tags:", 
+        "tags": [
+          "decorator view"
+        ], 
+        "consumes": [
+          "application/json", 
+          "application/x-www-form-urlencoded", 
+          "multipart/form-data"
+        ], 
+        "produces": [
+          "application/json", 
+          "text/html"
+        ], 
+        "description": "- test\nparameters:\n- in: formData\n  name: id\n  description: Person ID\n  type: integer\n  required: true\n  methods:\n  - post\nresponses:\n  200:\n    description: Status [200, 400, 403, 405]\n    schema:\n      type: object\n      properties:\n        status:\n          type: integer\n          enum: [200, 400, 403, 405]", 
+        "parameters": [
+          {
+            "required": true, 
+            "type": "string", 
+            "description": "Clients should authenticate by passing the base64 encoded username:password string\n            in the \"Authorization HTTP header, prepended with the string \"Basic \".\n            For example:\n            Authorization: Basic dXNlcjpwYXNzd29yZA==\n            ", 
+            "in": "header", 
+            "name": "Authorization"
+          }
+        ], 
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          }
+        }
+      }
+    }
+  }, 
+  "definitions": {
+    "TestModelSeriazlizer": {
+      "required": [
+        "related_models", 
+        "related_model", 
+        "custom_field", 
+        "parent_field", 
+        "datetime_field", 
+        "date_field", 
+        "time_field", 
+        "char_field", 
+        "choices_field", 
+        "text_field", 
+        "float_field", 
+        "file_field", 
+        "related_field"
+      ], 
+      "type": "object", 
+      "properties": {
+        "float_field": {
+          "type": "number", 
+          "description": "Float field", 
+          "format": "double"
+        }, 
+        "choices_field": {
+          "default": "a", 
+          "enum": [
+            "a", 
+            "b"
+          ], 
+          "type": "string"
+        }, 
+        "boolean_field": {
+          "default": false, 
+          "type": "boolean"
+        }, 
+        "integer_field": {
+          "default": 0, 
+          "type": "integer", 
+          "description": "Integer field"
+        }, 
+        "date_field": {
+          "type": "string", 
+          "description": "Date field", 
+          "format": "date"
+        }, 
+        "time_field": {
+          "type": "string", 
+          "description": "Date field"
+        }, 
+        "parent_field": {
+          "type": "integer"
+        }, 
+        "char_field": {
+          "type": "string", 
+          "description": "Char field", 
+          "maxLength": 50
+        }, 
+        "custom_field": {
+          "type": "integer"
+        }, 
+        "related_field": {
+          "type": "integer"
+        }, 
+        "related_model": {
+          "$ref": "#/definitions/IncludedSerializer"
+        }, 
+        "file_field": {
+          "type": "string", 
+          "description": "File field", 
+          "maxLength": 100
+        }, 
+        "datetime_field": {
+          "type": "string", 
+          "description": "Date time field", 
+          "format": "date-time"
+        }, 
+        "decimal_field": {
+          "default": 100.0, 
+          "type": "number", 
+          "format": "double"
+        }, 
+        "custom_integer_field": {
+          "default": 5, 
+          "minimum": 0, 
+          "type": "integer", 
+          "maximum": 10
+        }, 
+        "related_models": {
+          "items": {
+            "$ref": "#/definitions/IncludedSerializer"
+          }, 
+          "type": "array"
+        }, 
+        "text_field": {
+          "items": {
+            "type": "string"
+          }, 
+          "type": "array"
+        }, 
+        "id": {
+          "type": "integer"
+        }
+      }
+    }, 
+    "IncludedSerializer": {
+      "required": [
+        "related_field"
+      ], 
+      "type": "object", 
+      "properties": {
+        "id": {
+          "type": "integer"
+        }, 
+        "related_field": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
