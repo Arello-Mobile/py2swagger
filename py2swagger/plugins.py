@@ -6,8 +6,7 @@ class Py2SwaggerPluginException(Exception):
 
 
 class Py2SwaggerPlugin(IPlugin):
-    """ Interface for py2swagger plugins
-    """
+    """ Interface for py2swagger plugins """
 
     #: help description
     help = ''

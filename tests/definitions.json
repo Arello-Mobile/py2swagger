@@ -1,0 +1,21 @@
+{
+  "FavoritesSerializer": {
+    "required": [
+      "guid",
+      "favorites"
+    ],
+    "type": "object",
+    "properties": {
+      "guid": {
+        "type": "string"
+      },
+      "favorites": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array",
+        "description": "Another Description"
+      }
+    }
+  }
+}

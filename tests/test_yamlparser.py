@@ -1,4 +1,4 @@
-from django.test import TestCase
+from unittest import TestCase
 from py2swagger.yamlparser import YAMLDocstringParser
 
 
@@ -53,6 +53,7 @@ class YAMLDocstringParserTestCase(TestCase):
     def test_invalid_yaml(self):
 
         docstring = """
+        ---
         invalid:
             - yaml
         - here:here
@@ -197,13 +198,19 @@ class YAMLDocstringParserTestCase(TestCase):
         self.assertIn(200, responses.keys())
 
     def test_response_serializer(self):
-        response_seriazlier = self.parser.get_response_serializer()
+        response_serializer = self.parser.get_response_serializer()
 
-        self.assertEqual('some.path.to.ResponseSerializer', response_seriazlier)
+        self.assertEqual('some.path.to.ResponseSerializer', response_serializer)
 
     def test_request_serializer(self):
-        request_seriazlier = self.parser.get_request_serializer()
-        self.assertEqual('some.path.to.RequestSerializer', request_seriazlier)
+        response_serializer = self.parser.get_request_serializer()
+        self.assertEqual('some.path.to.RequestSerializer', response_serializer)
+
+    def test_get_serializers(self):
+        serializers = self.parser.get_serializers()
+        self.assertEqual(2, len(serializers))
+        self.assertIn('some.path.to.RequestSerializer', serializers)
+        self.assertIn('some.path.to.ResponseSerializer', serializers)
 
     def test_update(self):
         parser = YAMLDocstringParser(self.docstring)

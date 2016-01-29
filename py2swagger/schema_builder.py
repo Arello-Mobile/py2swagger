@@ -55,7 +55,8 @@ class SchemaBuilder(object):
                 else:
                     self._schema_definitions[def_id] = definition
 
-    def _get_operation(self, obj):
+    @staticmethod
+    def _get_operation(obj):
         operation = OrderedDict(
             summary=obj.get('summary', None),
         )
@@ -90,7 +91,7 @@ class SchemaBuilder(object):
         self._schema_paths[url][method] = operation
 
 
-def _extract_definitions(data, l=0):
+def _extract_definitions(data, toplevel=True):
     """
     Since we couldn't be bothered to register models elsewhere
     our definitions need to be extracted from the parameters.
@@ -99,8 +100,7 @@ def _extract_definitions(data, l=0):
     """
 
     definitions = []
-    if not data:
-        return definitions
+
     for item in data:
         if 'schema' in item and item['schema']:
             schema = item['schema']
@@ -109,15 +109,15 @@ def _extract_definitions(data, l=0):
                 definitions.append(schema)
                 ref = {'$ref': '#/definitions/{}'.format(schema_id)}
 
-                if l > 0:
+                if toplevel:
+                    item['schema'] = ref
+                else:
                     item.update(ref)
                     del item['schema']
-                else:
-                    item['schema'] = ref
 
-            definitions += _extract_definitions(_get_dict_values_defs(schema, 'properties'), l + 1)
-            definitions += _extract_definitions(_get_array_defs(schema), l + 1)
-        definitions += _extract_definitions(_get_array_defs(item), l + 1)
+            definitions += _extract_definitions(_get_dict_values_defs(schema, 'properties'), False)
+            definitions += _extract_definitions(_get_array_defs(schema), False)
+        definitions += _extract_definitions(_get_array_defs(item), False)
 
     return definitions
 
@@ -134,7 +134,7 @@ def _get_array_defs(source):
     ret = []
     items = source.get('items')
     if items and 'schema' in items:
-        return [items]
+        ret.append(items)
     return ret
 
 

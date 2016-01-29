@@ -25,7 +25,7 @@ class BaseDocstringIntrospector(object):
         self._parsers = (
             self._inheritances_parser,
             self._decorators_parser,
-            self._parser
+            self._parser,
         )
 
     @property

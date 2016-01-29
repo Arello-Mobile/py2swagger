@@ -1,0 +1,61 @@
+[
+  [
+    "/api/favorites/",
+    "post",
+    {
+      "responses": {
+        "200": {
+          "description": "Status",
+          "schema": {
+            "type": "object",
+            "id": "ResponseSerializer",
+            "properties": {
+              "status": {
+                "default": 0,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Authorization Failed"
+        },
+        "400": {
+          "description": "Serializer Errors",
+          "schema": {
+            "type": "object"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "id": "FavoritesSerializer"
+          },
+          "name": "data",
+          "in": "body"
+        },
+        {
+          "description": "Application Token",
+          "default": "auth-token",
+          "required": true,
+          "in": "header",
+          "type": "integer",
+          "name": "X-Auth-Token"
+        }
+      ],
+      "tags": [
+        "Favorites"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "summary": "Update favorites",
+      "description": "Custom Description",
+      "invalid_operation_parameter": "value",
+      "consumes": [
+        "application/json"
+      ]
+    }
+  ]
+]

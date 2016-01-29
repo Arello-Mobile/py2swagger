@@ -17,7 +17,7 @@ from .schema_builder import SchemaBuilder
 logging.basicConfig(level=logging.INFO)
 
 
-def run():
+def run():  # pragma: no cover
     internal_ext_path = os.path.join(os.path.dirname(__file__), '../ext')
     # search plugins in virtualenv site packages
     plugin_manager = PluginManager(
@@ -56,6 +56,8 @@ def run():
 
     try:
         datamap, definitions = plugin.plugin_object.run(args, **API_SETTINGS)
+        # print json.dumps(datamap, indent=2)
+        # print json.dumps(definitions, indent=2)
     except Py2SwaggerPluginException as e:
         sys.stderr.write('{}\n'.format(e))
         sys.exit(1)

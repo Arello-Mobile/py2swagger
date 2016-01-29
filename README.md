@@ -21,7 +21,7 @@ pip install py2swagger.ext.drf
 
 Command ``py2swagger``
 
-```bash
+```
 
 usage: py2swagger [-h] [-c CONFIG] [-o OUTPUT] {some_plugin} ...
 
@@ -39,9 +39,5 @@ optional arguments:
 ## Run tests
 
 ```bash
-cd src/
-
-pip install -r tests/testapp/requirements.txt
-
-usage: python tests/run_tests.py
+python setup.py test
 ```

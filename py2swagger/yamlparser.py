@@ -24,7 +24,7 @@ class YAMLDocstringParser(YAMLLoaderMixin):
         if '---' in docstring:
             head, yml = re.split(r'\s*---+\s*\n', docstring)
             if yml:
-                schema = self.yaml_load(yml)
+                schema = self.yaml_load(yml) or dict()
         else:
             head = docstring
 
@@ -66,7 +66,7 @@ class YAMLDocstringParser(YAMLLoaderMixin):
     def get_responses(self):
         """
         :return: Responses found in docstring
-        :rtype: list
+        :rtype: dict
         """
         return self.schema.get('responses', dict())
 
@@ -96,7 +96,8 @@ class YAMLDocstringParser(YAMLLoaderMixin):
         serializers = []
         for key, value in self.schema.get('serializers', dict()).items():
             path = value.get('path', None)
-            serializers.append(path)
+            if path:
+                serializers.append(path)
         return serializers
 
     def get_response_serializer(self):
