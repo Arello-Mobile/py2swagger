@@ -55,7 +55,8 @@ class SchemaBuilder(object):
                 else:
                     self._schema_definitions[def_id] = definition
 
-    def _get_operation(self, obj):
+    @staticmethod
+    def _get_operation(obj):
         operation = OrderedDict(
             summary=obj.get('summary', None),
         )
@@ -90,8 +91,7 @@ class SchemaBuilder(object):
         self._schema_paths[url][method] = operation
 
 
-## copy-paste from https://github.com/gangverk/flask-swagger/blob/9097d9a7d08b5d64fbfac23dfea9491cdde4382b/flask_swagger.py#L38
-def _extract_definitions(alist, level=0):
+def _extract_definitions(data, toplevel=True):
     """
     Since we couldn't be bothered to register models elsewhere
     our definitions need to be extracted from the parameters.
@@ -99,30 +99,27 @@ def _extract_definitions(alist, level=0):
     added to the definitions list.
     """
 
-    defs = []
-    for item in alist:
-        schema = item.get('schema')
-        if schema:
+    definitions = []
+
+    for item in data:
+        if 'schema' in item and item['schema']:
+            schema = item['schema']
             schema_id = schema.get('id')
             if schema_id:
-                defs.append(schema)
+                definitions.append(schema)
                 ref = {'$ref': '#/definitions/{}'.format(schema_id)}
 
-                # only add the reference as a schema if we are in a response or
-                # a parameter i.e. at the top level
-                # directly ref if a definition is used within another definition
-                if level == 0:
+                if toplevel:
                     item['schema'] = ref
                 else:
                     item.update(ref)
                     del item['schema']
 
-            defs += _extract_definitions(_get_dict_values_defs(schema, 'properties'), level + 1)
-            defs += _extract_definitions(_get_array_defs(schema), level + 1)
-        defs += _extract_definitions(_get_array_defs(item), level + 1)
+            definitions += _extract_definitions(_get_dict_values_defs(schema, 'properties'), False)
+            definitions += _extract_definitions(_get_array_defs(schema), False)
+        definitions += _extract_definitions(_get_array_defs(item), False)
 
-    return defs
-## end of copy-paste
+    return definitions
 
 
 def _get_list_defs(source, key):
@@ -137,7 +134,7 @@ def _get_array_defs(source):
     ret = []
     items = source.get('items')
     if items and 'schema' in items:
-        return [items]
+        ret.append(items)
     return ret
 
 

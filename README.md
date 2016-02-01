@@ -21,7 +21,7 @@ pip install py2swagger.ext.drf
 
 Command ``py2swagger``
 
-```bash
+```
 
 usage: py2swagger [-h] [-c CONFIG] [-o OUTPUT] {some_plugin} ...
 
@@ -33,4 +33,11 @@ optional arguments:
                         Path to custom config file
   -o OUTPUT, --output OUTPUT
                         Output file (Default stdout)
+```
+
+
+## Run tests
+
+```bash
+python setup.py test
 ```

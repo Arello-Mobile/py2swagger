@@ -5,12 +5,8 @@ import types
 import yaml
 
 from copy import deepcopy
-from collections import namedtuple
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict  # NOQA
+from collections import OrderedDict
 
 # Ability to load and dump yaml as OrderedDict
 from yaml import resolver
@@ -35,10 +31,10 @@ ALLOWED = 'all'
 class YAMLLoaderMixin(object):
 
     @staticmethod
-    def yaml_load(obj):
+    def yaml_load(data):
         try:
-            return yaml.load(obj)
-        except yaml.YAMLError:
+            return yaml.load(data)
+        except (yaml.YAMLError, AttributeError):
             return None
 
 
@@ -111,13 +107,10 @@ def get_decorators(function):
 
 def _extract_class_path(path):
     module_path = None
-    class_name = None
+    class_name = path
 
     if '.' in path:
-        class_name = path.split('.')[-1]
-        module_path = path[:-(len(class_name) + 1)]
-    else:
-        class_name = path
+        module_path, class_name = path.rsplit('.', 1)
 
     return module_path, class_name
 
