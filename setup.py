@@ -1,7 +1,6 @@
 # coding=utf-8
 
 import os
-import platform
 from setuptools import setup
 
 VERSION = '1.0.0'
@@ -13,7 +12,6 @@ README = """
 """
 
 # allow setup.py to be run from any path
-os.chdir(os.path.abspath(os.path.dirname(__file__)))
 install_requires = [
     'PyYAML>=3.10',
     'six',
@@ -24,7 +22,6 @@ setup(
     name='py2swagger',
     version=VERSION,
     packages=['py2swagger'],
-
     license='MIT',
     description='Swagger schema builder',
     long_description=README,
