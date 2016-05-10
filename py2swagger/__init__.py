@@ -62,9 +62,13 @@ def run():  # pragma: no cover
         sys.stderr.write('{}\n'.format(e))
         sys.exit(1)
 
+    if 'definitions' in SWAGGER_SETTINGS:
+        SWAGGER_SETTINGS['definitions'].update(definitions)
+    else:
+        SWAGGER_SETTINGS['definitions'] = definitions
+
     builder = SchemaBuilder(
         datamap=datamap,
-        definitions=definitions,
         **SWAGGER_SETTINGS
     )
 
