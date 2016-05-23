@@ -34,6 +34,13 @@ class YAMLDocstringParserTestCase(TestCase):
             path: some.path.to.RequestSerializer
           response:
             path: some.path.to.ResponseSerializer
+        security:
+        - api_key: []
+        securityDefinitions:
+          api_key:
+            type: apiKey
+            name: Auth-Token
+            in: header
         """
 
         self.parser = YAMLDocstringParser(self.docstring)
@@ -211,6 +218,19 @@ class YAMLDocstringParserTestCase(TestCase):
         self.assertEqual(2, len(serializers))
         self.assertIn('some.path.to.RequestSerializer', serializers)
         self.assertIn('some.path.to.ResponseSerializer', serializers)
+
+    def test_get_security(self):
+        security = self.parser.get_security()
+        self.assertEqual(1, len(security))
+        self.assertIn('api_key', security[0])
+        self.assertEqual([], security[0]['api_key'])
+
+    def test_get_security_definitions(self):
+        security_definitions = self.parser.get_security_definitions()
+        self.assertIn('api_key', security_definitions)
+        self.assertEqual('apiKey', security_definitions['api_key']['type'])
+        self.assertEqual('Auth-Token', security_definitions['api_key']['name'])
+        self.assertEqual('header', security_definitions['api_key']['in'])
 
     def test_update(self):
         parser = YAMLDocstringParser(self.docstring)

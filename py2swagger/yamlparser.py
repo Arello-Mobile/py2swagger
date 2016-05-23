@@ -118,6 +118,20 @@ class YAMLDocstringParser(YAMLLoaderMixin):
         """
         return self.get_serializer(request=True)
 
+    def get_security(self):
+        """
+        :return: Parameters found in docstring
+        :rtype: list
+        """
+        return self.schema.get('security', list())
+
+    def get_security_definitions(self):
+        """
+        :return: Responses found in docstring
+        :rtype: dict
+        """
+        return self.schema.get('securityDefinitions', dict())
+
     def update(self, docstring=''):
         """
         Update parser with another docstring
