@@ -16,6 +16,13 @@ class Parent(object):
             description: Parent 200 response
         401:
             description: Parent 401 response
+    security:
+    - parent_api_key: []
+    securityDefinitions:
+      parent_api_key:
+        type: apiKey
+        name: Auth-Token
+        in: header
     """
     pass
 
@@ -34,6 +41,13 @@ class Child(Parent):
         description: Child 200 response
       403:
         description: Child 403 response
+    security:
+    - child_api_key: []
+    securityDefinitions:
+      child_api_key:
+        type: apiKey
+        name: Auth-Token
+        in: header
     """
     pass
 
@@ -53,6 +67,13 @@ def decorator(func):
             description: Decorator 200 response
           401:
             description: Decorator 401 response
+        security:
+        - decorator_api_key: []
+        securityDefinitions:
+          decorator_api_key:
+            type: apiKey
+            name: Auth-Token
+            in: header
         """
         result = func(*args, **kwargs)
         return result * result
@@ -75,6 +96,13 @@ def decorated_function(n):
         description: Decorator 200 response
       403:
         description: Decorator 403 response
+    security:
+    - decorator_api_key: []
+    securityDefinitions:
+      decorator_api_key:
+        type: apiKey
+        name: Auth-Token
+        in: header
     """
     return n
 
@@ -95,10 +123,14 @@ class BaseDocstringIntrospectorTestCase(TestCase):
 
         parameters = introspector.parameters
         responses = introspector.responses
+        security = introspector.security
+        security_definitions = introspector.security_definitions
         parser = introspector.parser
 
         self.assertEqual(2, len(parameters))
         self.assertEqual(2, len(responses.keys()))
+        self.assertEqual(1, len(security))
+        self.assertEqual(2, len(security_definitions.keys()))
 
         self.assertEqual('Decorator Docstring', parser.get_summary())
 
@@ -107,10 +139,14 @@ class BaseDocstringIntrospectorTestCase(TestCase):
 
         parameters = introspector.parameters
         responses = introspector.responses
+        security = introspector.security
+        security_definitions = introspector.security_definitions
         parser = introspector.parser
 
         self.assertEqual(2, len(parameters))
         self.assertEqual(2, len(responses.keys()))
+        self.assertEqual(1, len(security))
+        self.assertEqual(2, len(security_definitions.keys()))
 
         self.assertEqual('Parent Class Docstring', parser.get_summary())
 
@@ -119,10 +155,14 @@ class BaseDocstringIntrospectorTestCase(TestCase):
 
         parameters = introspector.parameters
         responses = introspector.responses
+        security = introspector.security
+        security_definitions = introspector.security_definitions
         parser = introspector.parser
 
         self.assertEqual(4, len(parameters))
         self.assertEqual(3, len(responses.keys()))
+        self.assertEqual(2, len(security))
+        self.assertEqual(3, len(security_definitions.keys()))
 
         self.assertEqual('Child Class Docstring', parser.get_summary())
 
@@ -131,9 +171,13 @@ class BaseDocstringIntrospectorTestCase(TestCase):
 
         parameters = introspector.parameters
         responses = introspector.responses
+        security = introspector.security
+        security_definitions = introspector.security_definitions
         parser = introspector.parser
 
         self.assertEqual(4, len(parameters))
         self.assertEqual(3, len(responses.keys()))
+        self.assertEqual(2, len(security))
+        self.assertEqual(3, len(security_definitions.keys()))
 
         self.assertEqual('Decorator Docstring', parser.get_summary())
