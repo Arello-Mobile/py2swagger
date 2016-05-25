@@ -130,7 +130,7 @@ class BaseDocstringIntrospectorTestCase(TestCase):
         self.assertEqual(2, len(parameters))
         self.assertEqual(2, len(responses.keys()))
         self.assertEqual(1, len(security))
-        self.assertEqual(2, len(security_definitions.keys()))
+        self.assertEqual(1, len(security_definitions.keys()))
 
         self.assertEqual('Decorator Docstring', parser.get_summary())
 
@@ -146,7 +146,7 @@ class BaseDocstringIntrospectorTestCase(TestCase):
         self.assertEqual(2, len(parameters))
         self.assertEqual(2, len(responses.keys()))
         self.assertEqual(1, len(security))
-        self.assertEqual(2, len(security_definitions.keys()))
+        self.assertEqual(1, len(security_definitions.keys()))
 
         self.assertEqual('Parent Class Docstring', parser.get_summary())
 
@@ -162,7 +162,7 @@ class BaseDocstringIntrospectorTestCase(TestCase):
         self.assertEqual(4, len(parameters))
         self.assertEqual(3, len(responses.keys()))
         self.assertEqual(2, len(security))
-        self.assertEqual(3, len(security_definitions.keys()))
+        self.assertEqual(2, len(security_definitions.keys()))
 
         self.assertEqual('Child Class Docstring', parser.get_summary())
 
@@ -178,6 +178,6 @@ class BaseDocstringIntrospectorTestCase(TestCase):
         self.assertEqual(4, len(parameters))
         self.assertEqual(3, len(responses.keys()))
         self.assertEqual(2, len(security))
-        self.assertEqual(3, len(security_definitions.keys()))
+        self.assertEqual(1, len(security_definitions.keys()))
 
         self.assertEqual('Decorator Docstring', parser.get_summary())

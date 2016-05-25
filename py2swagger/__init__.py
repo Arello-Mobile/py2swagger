@@ -12,6 +12,7 @@ from yapsy.PluginManager import PluginManager
 from .config import SWAGGER_SETTINGS, API_SETTINGS
 from .plugins import Py2SwaggerPlugin, Py2SwaggerPluginException
 from .schema_builder import SchemaBuilder
+from .utils import update_settings
 
 
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 
 def run():  # pragma: no cover
     internal_ext_path = os.path.join(os.path.dirname(__file__), '../ext')
+    swagger_settings = SWAGGER_SETTINGS.copy()
     # search plugins in virtualenv site packages
     plugin_manager = PluginManager(
         categories_filter={'py2swagger': Py2SwaggerPlugin},
@@ -49,28 +51,19 @@ def run():  # pragma: no cover
 
     if args.config:
         custom_config = imp.load_source('config', args.config)
-        swagger_settings = getattr(custom_config, 'SWAGGER_SETTINGS', dict())
+        custom_swagger_settings = getattr(custom_config, 'SWAGGER_SETTINGS', dict())
         api_settings = getattr(custom_config, 'API_SETTINGS', dict())
-        SWAGGER_SETTINGS.update(swagger_settings)
+        swagger_settings.update(custom_swagger_settings)
         API_SETTINGS.update(api_settings)
 
     try:
-        datamap, definitions = plugin.plugin_object.run(args, **API_SETTINGS)
-        # print json.dumps(datamap, indent=2)
-        # print json.dumps(definitions, indent=2)
+        swagger_settings_part = plugin.plugin_object.run(args, **API_SETTINGS)
     except Py2SwaggerPluginException as e:
         sys.stderr.write('{}\n'.format(e))
         sys.exit(1)
 
-    if 'definitions' in SWAGGER_SETTINGS:
-        SWAGGER_SETTINGS['definitions'].update(definitions)
-    else:
-        SWAGGER_SETTINGS['definitions'] = definitions
-
-    builder = SchemaBuilder(
-        datamap=datamap,
-        **SWAGGER_SETTINGS
-    )
+    swagger_settings = update_settings(swagger_settings, swagger_settings_part)
+    builder = SchemaBuilder(**swagger_settings)
 
     swagger_schema = json.dumps(builder.schema, indent=2)
     if args.output:

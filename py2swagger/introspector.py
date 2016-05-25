@@ -141,5 +141,5 @@ class BaseDocstringIntrospector(object):
         """
         security_definitions = OrderedDict()
         for parser in self._parsers:
-            security_definitions.update(parser.get_responses())
+            security_definitions.update(parser.get_security_definitions())
         return security_definitions

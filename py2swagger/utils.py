@@ -143,3 +143,15 @@ def load_class(path):
         raise ImportError('Could not find {}'.format(path))
 
     return class_obj
+
+
+def update_settings(settings, settings_part):
+    for param_name, param_value in settings_part.items():
+        if param_name in settings and isinstance(settings[param_name], dict):
+            settings[param_name].update(param_value)
+        elif param_name in settings and isinstance(settings[param_name], list):
+            settings[param_name].extend(param_value)
+        else:
+            settings[param_name] = param_value
+
+    return settings
