@@ -1,6 +1,6 @@
 # coding=utf-8
-
 import os
+
 from setuptools import setup
 
 VERSION = '1.0.0'
@@ -18,10 +18,11 @@ install_requires = [
     'yapsy==1.11.223'
 ]
 
+BASE_DIR = os.path.dirname(__file__)
 setup(
     name='py2swagger',
     version=VERSION,
-    packages=['py2swagger'],
+    packages=['py2swagger', 'ext', 'ext.py2swagger_ext_default'],
     license='MIT',
     description='Swagger schema builder',
     long_description=README,
@@ -50,5 +51,6 @@ setup(
         'console_scripts': [
             'py2swagger = py2swagger:run',
         ]
-    }
+    },
+    data_files=[('ext', [os.path.join(BASE_DIR, 'ext', 'default.py2swagger')])]
 )

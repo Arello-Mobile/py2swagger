@@ -1,0 +1,7 @@
+[Core]
+Name = default_plugin
+Module = py2swagger_ext_default
+
+[Documentation]
+Version = 1.0.0
+Description = Django REST Framework plugin for py2swagger
