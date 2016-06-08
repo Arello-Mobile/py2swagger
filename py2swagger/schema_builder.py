@@ -30,6 +30,7 @@ class SchemaBuilder(object):
         })
         self._schema['host'] = self._kwargs.get('host', 'localhost:8000')
         self._schema['basePath'] = self._kwargs.get('basePath', '/')
+        self._schema['schemes'] = self._kwargs.get('schemes', ['http'])
         self._schema['produces'] = self._kwargs.get('produces', ['application/json'])
         self._schema['consumes'] = self._kwargs.get('consumes', ['application/json'])
         self._schema['paths'] = self._kwargs.get('paths', {})
