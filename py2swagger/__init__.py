@@ -9,7 +9,7 @@ import json
 from distutils.sysconfig import get_python_lib
 from yapsy.PluginManager import PluginManager
 
-from .config import SWAGGER_SETTINGS, API_SETTINGS
+from .config import SWAGGER_SETTINGS
 from .plugins import Py2SwaggerPlugin, Py2SwaggerPluginException
 from .schema_builder import SchemaBuilder
 from .utils import update_settings
@@ -52,12 +52,10 @@ def run():  # pragma: no cover
     if args.config:
         custom_config = imp.load_source('config', args.config)
         custom_swagger_settings = getattr(custom_config, 'SWAGGER_SETTINGS', dict())
-        api_settings = getattr(custom_config, 'API_SETTINGS', dict())
         swagger_settings.update(custom_swagger_settings)
-        API_SETTINGS.update(api_settings)
 
     try:
-        swagger_settings_part = plugin.plugin_object.run(args, **API_SETTINGS)
+        swagger_settings_part = plugin.plugin_object.run(args)
     except Py2SwaggerPluginException as e:
         sys.stderr.write('{}\n'.format(e))
         sys.exit(1)
