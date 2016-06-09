@@ -1,3 +1,5 @@
+import six
+
 from py2swagger.plugins import Py2SwaggerPlugin, Py2SwaggerPluginException
 from py2swagger.introspector import BaseDocstringIntrospector
 from py2swagger.utils import OrderedDict, load_class
@@ -55,7 +57,7 @@ class SimplePlugin(Py2SwaggerPlugin):
                                             'configuration file.')
 
         for path, method, callback in endpoints:
-            if isinstance(callback, basestring):
+            if isinstance(callback, six.string_types):
                 callback = load_class(callback)
             self._introspect(path, method, callback)
 
