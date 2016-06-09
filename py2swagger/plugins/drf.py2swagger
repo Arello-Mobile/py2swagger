@@ -1,0 +1,7 @@
+[Core]
+Name = drf
+Module = drf
+
+[Documentation]
+Version = 1.0.0
+Description = Django REST Framework plugin for py2swagger
