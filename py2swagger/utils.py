@@ -162,8 +162,9 @@ def get_settings(local_config_file_path=None):
     swagger_settings = SWAGGER_SETTINGS.copy()
     plugin_settings = {}
 
-    custom_config = imp.load_source('config', local_config_file_path)
-    swagger_settings.update(getattr(custom_config, 'SWAGGER_SETTINGS', dict()))
-    plugin_settings.update(getattr(custom_config, 'PLUGIN_SETTINGS', dict()))
+    if local_config_file_path:
+        custom_config = imp.load_source('config', local_config_file_path)
+        swagger_settings.update(getattr(custom_config, 'SWAGGER_SETTINGS', dict()))
+        plugin_settings.update(getattr(custom_config, 'PLUGIN_SETTINGS', dict()))
 
     return swagger_settings, plugin_settings
