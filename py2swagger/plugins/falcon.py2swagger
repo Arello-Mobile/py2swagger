@@ -1,0 +1,7 @@
+[Core]
+Name = falcon
+Module = falcon
+
+[Documentation]
+Version = 1.0.0
+Description = Falcon Framework plugin for py2swagger

@@ -93,6 +93,19 @@ class BaseDocstringIntrospector(object):
         return parser
 
     @property
+    def tags(self):
+        """
+        Collects tags from all parsers
+
+        :return: parameters
+        :rtype: list
+        """
+        tags = []
+        for parser in self._parsers:
+            tags.extend(parser.get_tags())
+        return tags
+
+    @property
     def parameters(self):
         """
         Collects parameters from all parsers

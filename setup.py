@@ -1,38 +1,19 @@
-# coding=utf-8
 import os
+from setuptools import setup, find_packages
 
-from setuptools import setup
 
-VERSION = '1.0.0'
-
-README = """
-  py2swagger
-
-  Swagger schema builder
-"""
-
-# allow setup.py to be run from any path
-install_requires = [
-    'PyYAML>=3.10',
-    'six',
-    'yapsy==1.11.223'
-]
-
-BASE_DIR = os.path.dirname(__file__)
 setup(
     name='py2swagger',
-    version=VERSION,
-    packages=['py2swagger', 'ext', 'ext.py2swagger_ext_default'],
+    version='1.0.0',
+    packages=find_packages(exclude=('tests', 'tests.*')),
     license='MIT',
     description='Swagger schema builder',
-    long_description=README,
-    install_requires=install_requires,
+    long_description=open('README.rst' if os.path.exists('README.rst') else 'README.md').read(),
+    install_requires=open('requirements.txt').read(),
     extras_require={
         'reST': ['docutils>=0.8'],
     },
-    tests_require=[
-        'nose',
-    ],
+    tests_require=['nose'],
     test_suite='nose.collector',
     author='Arello Mobile',
     url='https://github.com/Arello-Mobile/py2swagger',
@@ -52,5 +33,5 @@ setup(
             'py2swagger = py2swagger:run',
         ]
     },
-    data_files=[('ext', [os.path.join(BASE_DIR, 'ext', 'default.py2swagger')])]
+    package_data={'py2swagger.plugins': ['*.py2swagger']}
 )

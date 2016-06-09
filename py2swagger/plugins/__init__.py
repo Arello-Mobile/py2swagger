@@ -9,7 +9,8 @@ class Py2SwaggerPlugin(IPlugin):
     """ Interface for py2swagger plugins """
 
     #: help description
-    help = ''
+    summary = ''
+    description = ''
 
     def set_parser_arguments(self, parser):
         """ Set arguments for command line parser
@@ -22,8 +23,7 @@ class Py2SwaggerPlugin(IPlugin):
         """ Run plugin logic
 
         :param argparse.Namespace arguments:
-        :return: operation list and definition dict
-            ([(path, method, dump_parameters)], {name: {}})
-        :rtype: (list of tuples, dict)
+        :return: part of swagger object. This part contains "paths", "definitions" and "securityDefinitions"
+        :rtype: dict
         """
         raise NotImplementedError()
