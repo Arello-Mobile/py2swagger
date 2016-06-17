@@ -13,7 +13,7 @@ setup(
     extras_require={
         'reST': ['docutils>=0.8'],
     },
-    tests_require=['nose'],
+    tests_require=['nose', 'rednose', 'mock', 'Django', 'djangorestframework', 'falcon', 'bottle', 'flask'],
     test_suite='nose.collector',
     author='Arello Mobile',
     url='https://github.com/Arello-Mobile/py2swagger',
