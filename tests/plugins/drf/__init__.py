@@ -21,6 +21,14 @@ old_config = None
 if hasattr(django, 'setup'):
     django.setup()
 
+try:
+    # for Django<1.10
+    from django.conf.urls import patterns
+except ImportError:
+    # for Django>=1.10
+    def patterns(*args):
+        return list(filter(lambda x: x, args))
+
 
 def setup():
     global test_runner

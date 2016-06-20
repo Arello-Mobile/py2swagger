@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from .urlparser import MockApiView
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'a-view/?$', MockApiView.as_view(), name='a test view'),
     url(r'b-view$', MockApiView.as_view(), name='a test view'),
     url(r'c-view/$', MockApiView.as_view(), name='a test view'),
@@ -16,4 +15,4 @@ urlpatterns = patterns(
     url(r'a-view-honky/?$', MockApiView.as_view(), name='a test view'),
     url(r'view-with-pk/{pk}/?$', MockApiView.as_view(),
         name='another test view'),
-)
+]

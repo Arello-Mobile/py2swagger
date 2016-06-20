@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.conf.urls import patterns
+from . import patterns
 from django.conf.urls import url
 
 from py2swagger.utils import OrderedDict

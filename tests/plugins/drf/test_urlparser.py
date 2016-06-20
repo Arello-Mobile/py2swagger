@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.conf.urls import patterns, include
+from . import patterns
+from django.conf.urls import include
 from django.conf.urls import url
 from django.test import TestCase
 from importlib import import_module
