@@ -2,6 +2,17 @@ import os
 from setuptools import setup, find_packages
 
 
+testing_requirements = [
+    'nose',
+    'rednose',
+    'mock',
+    'Django<=1.10',
+    'djangorestframework',
+    'falcon',
+    'bottle',
+    'flask'
+]
+
 setup(
     name='py2swagger',
     version='1.0.0',
@@ -12,8 +23,9 @@ setup(
     install_requires=open('requirements.txt').read(),
     extras_require={
         'reST': ['docutils>=0.8'],
+        'testing': testing_requirements,
     },
-    tests_require=['nose', 'rednose', 'mock', 'Django', 'djangorestframework', 'falcon', 'bottle', 'flask'],
+    tests_require=testing_requirements,
     test_suite='nose.collector',
     author='Arello Mobile',
     url='https://github.com/Arello-Mobile/py2swagger',
