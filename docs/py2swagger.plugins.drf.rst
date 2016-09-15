@@ -10,14 +10,6 @@ Makes (`swagger`_) specification for API (`Django REST framework`_) applications
 .. _swagger: http://swagger.io/
 
 
-Install
--------
-
-.. code-block:: bash
-
-    pip install py2swagger.ext.drf
-
-
 Launch
 ------
 
