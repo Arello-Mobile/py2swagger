@@ -5,13 +5,11 @@ from .utils import OrderedDict
 
 class SchemaBuilder(object):
 
-    def __init__(self, datamap, **schema_properties):
+    def __init__(self, **schema_properties):
         self._schema_paths = None
         self._schema_definitions = None
         self._schema = None
         self._kwargs = schema_properties
-
-        self.datamap = datamap
 
     @property
     def schema(self):
@@ -32,19 +30,21 @@ class SchemaBuilder(object):
         })
         self._schema['host'] = self._kwargs.get('host', 'localhost:8000')
         self._schema['basePath'] = self._kwargs.get('basePath', '/')
+        self._schema['schemes'] = self._kwargs.get('schemes', ['http'])
         self._schema['produces'] = self._kwargs.get('produces', ['application/json'])
         self._schema['consumes'] = self._kwargs.get('consumes', ['application/json'])
-        self._schema['paths'] = self._schema_paths
+        self._schema['paths'] = self._kwargs.get('paths', {})
         self._schema['definitions'] = self._schema_definitions
+        self._schema['securityDefinitions'] = self._kwargs.get('securityDefinitions', {})
 
         schema_definitions = _extract_definitions(_get_global_defs(self._kwargs.get('definitions', {})))
         self._update_definitions(schema_definitions)
 
-        for url, method, obj in self.datamap:
-            parameters_definitions = _extract_definitions(_get_list_defs(obj, 'parameters'))
-            responses_definitions = _extract_definitions(_get_dict_values_defs(obj, 'responses'))
-            self._update_definitions(parameters_definitions + responses_definitions)
-            self._update_path(url, method, self._get_operation(obj))
+        for methods in self._schema['paths'].values():
+            for operation in methods.values():
+                parameters_definitions = _extract_definitions(_get_list_defs(operation, 'parameters'))
+                responses_definitions = _extract_definitions(_get_dict_values_defs(operation, 'responses'))
+                self._update_definitions(parameters_definitions + responses_definitions)
 
     def _update_definitions(self, defs):
         for definition in defs:
@@ -54,41 +54,6 @@ class SchemaBuilder(object):
                     self._schema_definitions[def_id].update(definition)
                 else:
                     self._schema_definitions[def_id] = definition
-
-    @staticmethod
-    def _get_operation(obj):
-        operation = OrderedDict(
-            summary=obj.get('summary', None),
-        )
-
-        optional_fields = [
-            'tags',
-            'consumes',
-            'produces',
-            'schemes',
-            'security',
-            'deprecated',
-            'operationId',
-            'externalDocs'
-        ]
-        for key in optional_fields:
-            if key in obj:
-                operation[key] = obj.get(key)
-
-        if 'description' in obj:
-            operation['description'] = obj['description']
-
-        # parameters - swagger ui dislikes empty parameter lists
-        if 'parameters' in obj:
-            operation['parameters'] = obj['parameters']
-
-        operation['responses'] = obj.get('responses', {})
-        return operation
-
-    def _update_path(self, url, method, operation):
-        if url not in self._schema_paths:
-            self._schema_paths[url] = OrderedDict()
-        self._schema_paths[url][method] = operation
 
 
 def _extract_definitions(data, toplevel=True):

@@ -1,0 +1,3 @@
+PyYAML>=3.10
+six
+yapsy==1.11.223

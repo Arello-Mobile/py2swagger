@@ -93,9 +93,22 @@ class BaseDocstringIntrospector(object):
         return parser
 
     @property
+    def tags(self):
+        """
+        Collects tags from all parsers
+
+        :return: parameters
+        :rtype: list
+        """
+        tags = []
+        for parser in self._parsers:
+            tags.extend(parser.get_tags())
+        return tags
+
+    @property
     def parameters(self):
         """
-        Collects pararameters from all parsers
+        Collects parameters from all parsers
 
         :return: parameters
         :rtype: list
@@ -117,3 +130,29 @@ class BaseDocstringIntrospector(object):
         for parser in self._parsers:
             responses.update(parser.get_responses())
         return responses
+
+    @property
+    def security(self):
+        """
+        Collects security from all parsers
+    
+        :return: security
+        :rtype: list
+        """
+        security = []
+        for parser in self._parsers:
+            security.extend(parser.get_security())
+        return security
+        
+    @property
+    def security_definitions(self):
+        """
+        Collects securityDefinitions from all parsers
+    
+        :return: security_definitions
+        :rtype: OrderedDict
+        """
+        security_definitions = OrderedDict()
+        for parser in self._parsers:
+            security_definitions.update(parser.get_security_definitions())
+        return security_definitions

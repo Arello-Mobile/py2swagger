@@ -230,3 +230,35 @@ class Py2SwaggerUtilsTestCase(TestCase):
         index_b = result.index('b')
         index_c = result.index('c')
         self.assertTrue(index_a < index_b < index_c)
+
+    def test_update_settings(self):
+        config = {
+            'version': '42',
+            'title': 'Custom title',
+            'description': 'Custom description',
+            'host': 'host.name',
+            'produces': ['feel/goodness'],
+            'consumes': ['some/all'],
+            'definitions': {}
+        }
+        extend_config = {
+            'version': 23,
+            'definitions': {
+                'a': {
+                    'type': 'integer'
+                }
+            },
+            'consumes': ['text/plain'],
+        }
+        expected_result = {
+            'description': 'Custom description',
+            'produces': ['feel/goodness'],
+            'title': 'Custom title',
+            'host': 'host.name',
+            'version': 23,
+            'definitions': {'a': {'type': 'integer'}},
+            'consumes': ['some/all', 'text/plain']
+        }
+        self.assertDictContainsSubset(expected_result, utils.update_settings(config, extend_config))
+
+

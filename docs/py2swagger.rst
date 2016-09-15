@@ -48,10 +48,6 @@ Example
 
 .. code-block:: python
 
-    REST_INSPECTOR_SETTINGS = {
-        'api_base_url': 'api/'
-    }
-
     SWAGGER_SETTINGS = {
         'title': 'API title',
         'description': 'Description'
@@ -70,13 +66,6 @@ Example
         ],
         'enabled_methods': ['get', 'post', 'put', 'patch', 'delete'],
     }
-
-``api_base_url``
-----------------
-
-Start path for all API endpoints.
-All endpoints, what paths not start with ``api_base_url`` will ignore
-
 
 ``SWAGGER_SETTINGS``
 --------------------
@@ -109,3 +98,34 @@ File must located in folder ``site-packages`` of your virtualenv.
 Keyword Module should be set by name of plugin package.
 
 .. _Plugin Info File Format: http://yapsy.sourceforge.net/PluginManager.html#plugin-info-file-format
+
+
+Default Plugin
+--------------
+
+Nested in ``py2swagger``. This plugin usage ``API Map`` to collect "paths", "definitions" and "securityDefinitions".
+
+``API Map``
+~~~~~~~~~~~
+
+Python list of tuples: (path, method, callback)
+
+.. code-block:: python
+    MAP = [
+        ('/api/list', 'get', 'app.views.list_callback'),
+        ('/api/create', 'post', 'app.views.create_callback'),
+    ]
+
+
+Parameters
+~~~~~~~~~~
+
+  - map - path to ``API Map``
+
+
+
+Usage Example:
+.. code-block:: bash
+
+    py2swagger -c config.py default_plugin path.to.MAP
+

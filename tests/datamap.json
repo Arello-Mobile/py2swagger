@@ -1,8 +1,6 @@
-[
-  [
-    "/api/favorites/",
-    "post",
-    {
+{
+  "/api/favorites/": {
+    "post": {
       "responses": {
         "200": {
           "description": "Status",
@@ -52,10 +50,9 @@
       ],
       "summary": "Update favorites",
       "description": "Custom Description",
-      "invalid_operation_parameter": "value",
       "consumes": [
         "application/json"
       ]
     }
-  ]
-]
+  }
+}

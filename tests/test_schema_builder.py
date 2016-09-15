@@ -4,6 +4,7 @@ import copy
 from unittest import TestCase
 
 from py2swagger import schema_builder
+from py2swagger.utils import update_settings
 
 
 class SchemaBuilderTestCase(TestCase):
@@ -109,12 +110,13 @@ class SchemaBuilderTestCase(TestCase):
         definitions_path = os.path.join(os.path.dirname(__file__), 'definitions.json')
 
         with open(datamap_path) as datamap_file:
-            datamap = json.load(datamap_file)
+            paths = json.load(datamap_file)
 
         with open(definitions_path) as definitions_file:
             definitions = json.load(definitions_file)
 
-        builder = schema_builder.SchemaBuilder(datamap, definitions=definitions, **config)
+        config = update_settings(config, {'paths': paths, 'definitions': definitions})
+        builder = schema_builder.SchemaBuilder(**config)
 
         result = builder.schema
 
@@ -127,13 +129,6 @@ class SchemaBuilderTestCase(TestCase):
         self.assertEqual(config['consumes'], result['consumes'])
 
         self.assertEqual(1, len(result['paths']))
-        self.assertIn(datamap[0][0], result['paths'])
-        self.assertIn(datamap[0][1], result['paths'][datamap[0][0]])
-
-        operation = result['paths'][datamap[0][0]][datamap[0][1]]
-
-        self.assertNotIn('invalid_operation_parameter', operation)
-
         self.assertEqual(2, len(result['definitions']))
 
         self.assertIn('ResponseSerializer', result['definitions'])

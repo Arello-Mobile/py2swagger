@@ -1,0 +1,4 @@
+include py2swagger/plugins/*.py2swagger
+include README.md
+include LICENSE
+include requirements.txt

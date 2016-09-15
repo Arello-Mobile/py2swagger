@@ -1,15 +1,16 @@
+import imp
 import importlib
 import inspect
 import six
 import types
 import yaml
-
 from copy import deepcopy
-
 from collections import OrderedDict
 
 # Ability to load and dump yaml as OrderedDict
 from yaml import resolver
+
+from .config import SWAGGER_SETTINGS
 
 _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
@@ -143,3 +144,27 @@ def load_class(path):
         raise ImportError('Could not find {}'.format(path))
 
     return class_obj
+
+
+def update_settings(settings, settings_part):
+    for param_name, param_value in settings_part.items():
+        if param_name in settings and isinstance(settings[param_name], dict):
+            settings[param_name].update(param_value)
+        elif param_name in settings and isinstance(settings[param_name], list):
+            settings[param_name].extend(param_value)
+        else:
+            settings[param_name] = param_value
+
+    return settings
+
+
+def get_settings(local_config_file_path=None):
+    swagger_settings = SWAGGER_SETTINGS.copy()
+    plugin_settings = {}
+
+    if local_config_file_path:
+        custom_config = imp.load_source('config', local_config_file_path)
+        swagger_settings.update(getattr(custom_config, 'SWAGGER_SETTINGS', dict()))
+        plugin_settings.update(getattr(custom_config, 'PLUGIN_SETTINGS', dict()))
+
+    return swagger_settings, plugin_settings

@@ -1,0 +1,2 @@
+class IntrospectorException(Exception):
+    pass

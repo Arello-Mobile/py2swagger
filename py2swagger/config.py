@@ -1,7 +1,3 @@
-API_SETTINGS = {
-    'api_base_url': 'api/'
-}
-
 SWAGGER_SETTINGS = {
     'title': 'API title',
     'version': '0.0.1',
