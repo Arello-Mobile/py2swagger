@@ -1,41 +1,18 @@
-from distutils.version import StrictVersion
 import inspect
 from copy import deepcopy
 
 from py2swagger.utils import OrderedDict
 from py2swagger.yamlparser import YAMLDocstringParser
-from rest_framework import fields, VERSION as REST_FRAMEWORK_VERSION
-from rest_framework.relations import RelatedField
-from rest_framework.serializers import BaseSerializer, ModelSerializer
+from rest_framework.serializers import ModelSerializer
 
-REST_FRAMEWORK_V3 = StrictVersion(REST_FRAMEWORK_VERSION) > StrictVersion('3.0.0')
+from . import REST_FRAMEWORK_V3
+from .field import FieldIntrospector
 
 
 class SerializerIntrospector(object):
     """
     DjangoRestFramework Serializer Introspector
     """
-    DEFAULT_FIELD_TYPE = ('string', 'string', None)
-
-    FIELD_TYPES = {
-        # Field Class: (field_type, swagger_type, swagger_format)
-        RelatedField: ('related', 'integer', None),
-        fields.IntegerField: ('integer', 'integer', None),
-        fields.CharField: DEFAULT_FIELD_TYPE,
-        fields.FloatField: ('float', 'number', 'double'),
-        fields.DateField: ('date', 'string', 'date'),
-        fields.DateTimeField: ('datetime', 'string', 'date-time'),
-        fields.DecimalField: ('decimal', 'number', 'double'),
-        fields.BooleanField: ('boolean', 'boolean', None),
-        fields.ChoiceField: ('choice', 'string', None),
-        fields.FileField: ('file', 'file', None),
-        fields.ImageField: ('image', 'file', None),
-        fields.EmailField: ('email', 'string', 'email')
-    }
-
-    if REST_FRAMEWORK_V3:
-        from rest_framework.fields import MultipleChoiceField
-        FIELD_TYPES[MultipleChoiceField] = ('multiple choice', 'string', None)
 
     def __init__(self, serializer):
         """
@@ -81,20 +58,10 @@ class SerializerIntrospector(object):
                 _fields[field_name] = self._prepare_docstring_field_object(field_object)
 
             else:
-                _fields[field_name] = self._prepare_serializer_field(serializer_fields[field_name])
+                fi = FieldIntrospector(serializer_fields[field_name], self.__class__)
+                _fields[field_name] = fi.prepare_field_object()
 
         return _fields
-
-    def _prepare_serializer_field(self, field):
-        result = OrderedDict()
-
-        result['required'] = getattr(field, 'required', False)
-        result['readOnly'] = getattr(field, 'read_only', False)
-
-        result['response'] = self._get_field_object(field)
-        result['request'] = self._get_field_object(field, request=True)
-
-        return result
 
     @staticmethod
     def _prepare_docstring_field_object(field_object):
@@ -136,21 +103,9 @@ class SerializerIntrospector(object):
         :rtype: dict
         """
         if hasattr(self.serializer, '__call__'):
-            return self.serializer().get_fields()
+            return self.serializer().fields.fields
         else:
             return self.serializer.get_fields()
-
-    @classmethod
-    def _get_field_type(cls, field):
-        """
-        :param field: DjangoRestFramework field object
-        :return: (field_type, swagger_type, swagger_format)
-        :rtype: tuple
-        """
-        for instance in cls.FIELD_TYPES:
-            if isinstance(field, instance):
-                return cls.FIELD_TYPES[instance]
-        return cls.DEFAULT_FIELD_TYPE
 
     def _get_formdata_parameters(self):
         """
@@ -198,84 +153,6 @@ class SerializerIntrospector(object):
             return parameters
         else:
             return self._get_body_parameters()
-
-    @staticmethod
-    def _get_default_value(field):
-        """
-        :param field: DjangoRestFramework field object
-        :return: default value for field
-        :rtype: any
-        """
-        default_value = getattr(field, 'default', None)
-
-        if REST_FRAMEWORK_V3:
-            from rest_framework.fields import empty
-            if default_value == empty:
-                default_value = None
-
-        if hasattr(default_value, '__call__'):
-            default_value = default_value()
-
-        return default_value
-
-    def _get_field_object(self, field, request=False):
-        """
-        Creates swagger object for field for request or response
-
-        :param field: DjangoRestFramework field object
-        :param request: is this object for request?
-        :return: swagger object
-        :rtype: OrderedDict
-        """
-        if isinstance(field, BaseSerializer):
-            if getattr(field, 'many', None):
-                result = {
-                    'type': 'array',
-                    'items': SerializerIntrospector(field).build_response_object(),
-                }
-            else:
-                result = SerializerIntrospector(field).build_response_object()
-        else:
-            field_type, data_type, data_format = self._get_field_type(field)
-            if data_type == 'file' and not request:
-                data_type = 'string'
-            result = OrderedDict(type=data_type)
-
-            # Retrieve Field metadata
-            max_val = getattr(field, 'max_value', None)
-            min_val = getattr(field, 'min_value', None)
-            max_length = getattr(field, 'max_length', None)
-            default = self._get_default_value(field)
-            description = getattr(field, 'help_text', '')
-
-            if data_format:
-                result['format'] = data_format
-
-            if max_val is not None and data_type in ('integer', 'number'):
-                result['minimum'] = min_val
-
-            if max_val is not None and data_type in ('integer', 'number'):
-                result['maximum'] = max_val
-
-            if max_length is not None and data_type == 'string':
-                result['maxLength'] = max_length
-
-            if description:
-                result['description'] = description
-
-            if default is not None:
-                result['default'] = default
-
-            if field_type in ['multiple choice', 'choice']:
-                if isinstance(field.choices, list):
-                    result['enum'] = [k for k, v in field.choices]
-                elif isinstance(field.choices, dict):
-                    # DRF > 3.0.0
-                    result['enum'] = [k for k in field.choices]
-
-                if all(isinstance(item, int) for item in result.get('enum', ['1'])):
-                    result['type'] = 'integer'
-        return result
 
     def _get_schema(self, multiple=False, inline=False, request=False):
         required = []
