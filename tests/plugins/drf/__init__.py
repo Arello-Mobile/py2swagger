@@ -11,7 +11,8 @@ from .. import FIXTURES_PATH
 
 sys.path.append(os.path.join(FIXTURES_PATH, 'drf_application'))
 
-REST_FRAMEWORK_V3 = StrictVersion(REST_FRAMEWORK_VERSION) > StrictVersion('3.0.0')
+REST_FRAMEWORK_V3 = StrictVersion(REST_FRAMEWORK_VERSION) >= StrictVersion('3.0.0')
+REST_FRAMEWORK_V35 = StrictVersion(REST_FRAMEWORK_VERSION) >= StrictVersion('3.5.0')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 

@@ -6,6 +6,7 @@ from .method import BaseMethodIntrospector, ViewSetMethodIntrospector, ApiViewMe
 
 from ..exceptions import IntrospectorException
 from py2swagger.introspector import BaseDocstringIntrospector
+from py2swagger.utils import get_decorators
 
 
 class BaseViewIntrospector(BaseDocstringIntrospector):

@@ -51,7 +51,7 @@ class SerializerIntrospectorTestCase(TestCase):
             'related_models': ('array', None),
             'related_model': (None, None),
             'custom_integer_field': ('integer', None),
-            'custom_field': ('integer', None),
+            'custom_field': ('array', None),
             'id': ('integer', None),
             'datetime_field': ('string', 'date-time'),
             'date_field': ('string', 'date'),

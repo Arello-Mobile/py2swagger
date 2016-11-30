@@ -3,9 +3,8 @@ from copy import deepcopy
 
 from py2swagger.utils import OrderedDict
 from py2swagger.yamlparser import YAMLDocstringParser
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ListSerializer
 
-from . import REST_FRAMEWORK_V3
 from .field import FieldIntrospector
 
 
@@ -18,10 +17,8 @@ class SerializerIntrospector(object):
         """
         :param serializer: DjangoRestFramework Serializer
         """
-        if REST_FRAMEWORK_V3:
-            from rest_framework.serializers import ListSerializer
-            if isinstance(serializer, ListSerializer):
-                serializer = serializer.child
+        if isinstance(serializer, ListSerializer):
+            serializer = serializer.child
 
         self.serializer = serializer
         self.name = self._get_name()

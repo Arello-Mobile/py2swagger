@@ -7,8 +7,6 @@ from rest_framework.serializers import BaseSerializer
 from py2swagger.utils import OrderedDict
 from py2swagger.yamlparser import YAMLDocstringParser
 
-from . import REST_FRAMEWORK_V3
-
 
 class FieldIntrospector(object):
     DEFAULT_FIELD_TYPE = ('string', 'string', None)
@@ -25,11 +23,9 @@ class FieldIntrospector(object):
         fields.ChoiceField: ('choice', 'string', None),
         fields.FileField: ('file', 'file', None),
         fields.ImageField: ('image', 'file', None),
-        fields.EmailField: ('email', 'string', 'email')
+        fields.EmailField: ('email', 'string', 'email'),
+        fields.MultipleChoiceField: ('multiple choice', 'string', None)
     }
-    if REST_FRAMEWORK_V3:
-        from rest_framework.fields import MultipleChoiceField
-        FIELD_TYPES[MultipleChoiceField] = ('multiple choice', 'string', None)
 
     _field = None
     _serializer_inrospector_class = None
@@ -107,10 +103,7 @@ class FieldIntrospector(object):
                 result['default'] = default
 
             if field_type in ['multiple choice', 'choice']:
-                if isinstance(self._field.choices, list):
-                    result['enum'] = [k for k, v in self._field.choices]
-                elif isinstance(self._field.choices, dict):
-                    # DRF > 3.0.0
+                if isinstance(self._field.choices, dict):
                     result['enum'] = [k for k in self._field.choices]
 
                 if all(isinstance(item, int) for item in result.get('enum', ['1'])):
@@ -124,10 +117,8 @@ class FieldIntrospector(object):
         """
         default_value = getattr(self._field, 'default', None)
 
-        if REST_FRAMEWORK_V3:
-            from rest_framework.fields import empty
-            if default_value == empty:
-                default_value = None
+        if default_value == fields.empty:
+            default_value = None
 
         if hasattr(default_value, '__call__'):
             default_value = default_value()

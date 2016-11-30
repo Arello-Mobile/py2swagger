@@ -2,7 +2,7 @@
 
 Tool for automated or semi-automated generate a [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification)
 (aka Swagger Specification) for Web APIs written with Python and famous frameworks, such as:
-- [Django REST Framework](https://github.com/tomchristie/django-rest-framework) (DRF>=2; Django>=1.6)
+- [Django REST Framework](https://github.com/tomchristie/django-rest-framework) (DRF>=3; Django>=1.8)
 - [Falcon](https://github.com/falconry/falcon) (falcon>=0.3)
 - flask
 - bottle
