@@ -7,6 +7,7 @@ from py2swagger.plugins.drf.injection import viewset_as_view_decorator
 from py2swagger.plugins.drf.urlparser import UrlParser
 from py2swagger.plugins.drf.introspectors.api import ApiIntrospector
 from py2swagger.plugins.drf.introspectors.view import ApiViewIntrospector, ViewSetIntrospector, WrappedApiViewIntrospector, get_view_introspector
+from . import REST_FRAMEWORK_V35
 
 from testapp.views import EmailApiView, CustomViewSet, decorator_view, RedefineViewSet
 
@@ -48,8 +49,12 @@ class ApiIntrospectorTestCase(TestCase, ApiIntrospectorMixin):
         introspector = get_view_introspector(self.apis[1])
         self.assertTrue(isinstance(introspector, ViewSetIntrospector), 'Invalid introspector instance')
 
-        introspector = get_view_introspector(self.apis[2])
-        self.assertTrue(isinstance(introspector, WrappedApiViewIntrospector), 'Invalid introspector instance')
+        if REST_FRAMEWORK_V35:
+            introspector = get_view_introspector(self.apis[2])
+            self.assertTrue(isinstance(introspector, ApiViewIntrospector), 'Invalid introspector instance')
+        else:
+            introspector = get_view_introspector(self.apis[2])
+            self.assertTrue(isinstance(introspector, WrappedApiViewIntrospector), 'Invalid introspector instance')
 
 
 class ContentIntrospectorTestCase(TestCase, ApiIntrospectorMixin):

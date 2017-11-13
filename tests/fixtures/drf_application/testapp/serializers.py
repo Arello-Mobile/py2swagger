@@ -7,6 +7,15 @@ from .models import TestModel, RelatedModel
 
 
 class CustomField(IntegerField):
+    """
+    ---
+    request:
+      type: array
+      items:
+        type: string
+    response:
+      type: string
+    """
     type_label = None
 
 
@@ -14,6 +23,7 @@ class IncludedSerializer(ModelSerializer):
 
     class Meta:
         model = RelatedModel
+        exclude = []
 
 
 class TestModelSeriazlizer(ModelSerializer):
@@ -35,6 +45,7 @@ class TestModelSeriazlizer(ModelSerializer):
 
     class Meta:
         model = TestModel
+        exclude = []
 
 
 class TestSimpleSerializer(Serializer):

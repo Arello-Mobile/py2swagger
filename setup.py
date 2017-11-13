@@ -7,7 +7,7 @@ testing_requirements = [
     'rednose',
     'mock',
     'coverage',
-    'Django<=1.10',
+    'Django',
     'djangorestframework',
     'falcon',
     'bottle',

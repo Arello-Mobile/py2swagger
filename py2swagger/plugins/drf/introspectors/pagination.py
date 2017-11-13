@@ -169,52 +169,6 @@ class CursorPaginationIntrospector(BasePaginationIntrospector):
         return parameters
 
 
-class PaginationBySerializerIntrospector(BasePaginationIntrospector):
-    """
-    Introspector for DjangoRestFramework 2.0 pagination serializer
-    """
-    results_field = 'results'
-    response_fields = (
-        ('count', 'integer'),
-        ('next', 'string'),
-        ('previous', 'string'),
-        (results_field, None),
-    )
-
-    @property
-    def parameters(self):
-        """
-        Collects pagination parameters from view
-        :return: Parameters array
-        :rtype: list
-        """
-        parameters = super(PaginationBySerializerIntrospector, self).parameters
-
-        page_kwarg = getattr(self.view, 'page_kwarg', None)
-        paginate_by_param = getattr(self.view, 'paginate_by_param', None)
-        paginate_by = getattr(self.view, 'paginate_by', None)
-
-        if page_kwarg:
-            parameters.append(OrderedDict([
-                ('in', 'query'),
-                ('name', page_kwarg),
-                ('type', 'integer'),
-                ('description', 'Page parameter'),
-                ('required', False),
-            ]))
-
-        if paginate_by_param:
-            parameters.append(OrderedDict([
-                ('in', 'query'),
-                ('name', self.view.paginate_by_param),
-                ('type', 'integer'),
-                ('description', 'Page size parameter (default={})'.format(paginate_by)),
-                ('required', False),
-            ]))
-
-        return parameters
-
-
 def get_pagination_introspector(view, si=None):
     """
     Create pagination introspector based on view
@@ -235,9 +189,6 @@ def get_pagination_introspector(view, si=None):
             return CursorPaginationIntrospector(view, pagination_class, si=si)
         else:
             return BasePaginationIntrospector(view, pagination_class, si=si)
-    elif getattr(view, 'paginate_by', None):
-        # DjangoRestFramework 2.0 pagination style with pagination serializer
-        return PaginationBySerializerIntrospector(view=view, si=si)
     else:
         # Unrecognized view type
         return BasePaginationIntrospector(si=si)
