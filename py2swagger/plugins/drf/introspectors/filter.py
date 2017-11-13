@@ -64,8 +64,14 @@ class OrderingFilterBackendIntrospector(BaseFilterBackendIntrospector):
 def get_filter_introspectors(view):
 
     from rest_framework import filters
+    try:
+        from django_filters.rest_framework.backends \
+            import DjangoFilterBackend as third_party_django_filter_backend
+    except ImportError:
+        third_party_django_filter_backend = filters.DjangoFilterBackend
 
     filters_map = {
+        third_party_django_filter_backend: DjangoFilterBackendIntrospector,
         filters.DjangoFilterBackend: DjangoFilterBackendIntrospector,
         filters.OrderingFilter: OrderingFilterBackendIntrospector,
     }
