@@ -8,7 +8,7 @@ Example
 
     SWAGGER_SETTINGS = {
         'title': 'API title',
-        'description': 'Description'
+        'description': 'Description',
         'version': '0.0.1',
         'basePath': '/',
         'host': '',
